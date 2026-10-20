@@ -1,0 +1,39 @@
+name: OKX Futures Scalping Backtest
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - "strategy8_mtf.py"
+      - ".github/workflows/backtest.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  backtest:
+    runs-on: ubuntu-latest
+    timeout-minutes: 360
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Run backtest
+        run: python strategy7_mtf.py 30
+
+      - name: Upload backtest results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: okx-backtest-results
+          path: |
+            summary.csv
+            trades.csv
+            equity.csv
+          if-no-files-found: warn
